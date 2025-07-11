@@ -1,1 +1,92 @@
-<h1>My Portfolio</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💌 A Message for You</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #444;
+    }
+    .message {
+      font-size: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 1rem;
+      resize: none;
+    }
+    button {
+      margin-top: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .success {
+      margin-top: 1rem;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>💌 A Message for You</h1>
+    <div class="message" id="mainMessage">
+      You are amazing. Keep going. 🌟
+    </div>
+
+    <h2>📬 Send a Reply</h2>
+    <textarea id="replyInput" placeholder="Write your message here..."></textarea>
+    <button onclick="sendReply()">Send Message</button>
+    <div class="success" id="successMessage"></div>
+  </div>
+
+  <script>
+    function sendReply() {
+      const input = document.getElementById("replyInput");
+      const text = input.value.trim();
+      if (text === "") return;
+
+      // Simulate sending (just for testing)
+      console.log("Message sent:", text);
+      input.value = "";
+      document.getElementById("successMessage").textContent = "✅ Message sent! (Test only)";
+    }
+  </script>
+</body>
+</html>
