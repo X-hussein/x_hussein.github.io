@@ -5,11 +5,10 @@
   <title>Page 1 - Send to B</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body style="font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto;">
-
+<body style="font-family:sans-serif; padding:2rem; max-width:600px; margin:auto;">
   <h2>✉️ Send Message to Page 2</h2>
-  <textarea id="sendBox" placeholder="Write your message..." style="width: 100%; height: 100px;"></textarea>
-  <button onclick="sendMessage()" style="margin-top: 10px;">Send</button>
+  <textarea id="sendBox" placeholder="Write your message..." style="width:100%; height:100px;"></textarea>
+  <button onclick="sendMessage()" style="margin-top:10px;">Send</button>
   <p id="status" style="color: green;"></p>
 
   <hr />
@@ -19,7 +18,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getFirestore, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAh_wT6Gen8-gLNnDOmwIixOthwSs7PdhM",
@@ -36,19 +35,22 @@
     const db = getFirestore(app);
     const docRef = doc(db, "chat", "sharedMessage");
 
-    // Send message to Page 2
     async function sendMessage() {
       const msg = document.getElementById("sendBox").value.trim();
       if (!msg) return;
-      await updateDoc(docRef, { messageFromA: msg });
-      document.getElementById("status").innerText = "✅ Message sent!";
+      try {
+        await updateDoc(docRef, { messageFromA: msg });
+        document.getElementById("status").innerText = "✅ Message sent!";
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("status").innerText = "❌ Failed to send.";
+      }
     }
 
-    // Listen for reply from Page 2
+    // Live update for messageFromB
     onSnapshot(docRef, (docSnap) => {
       const data = docSnap.data();
-      document.getElementById("receivedMessage").innerText =
-        data.messageFromB || "(No reply yet)";
+      document.getElementById("receivedMessage").innerText = data.messageFromB || "(No reply yet)";
     });
   </script>
 </body>
