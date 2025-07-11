@@ -31,6 +31,7 @@
       max-width: 600px;
       width: 90%;
       text-align: center;
+      position: relative;
     }
 
     h1 {
@@ -74,10 +75,41 @@
       margin-top: 1rem;
       color: green;
     }
+
+    #historyToggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      font-size: 1.4rem;
+      color: #888;
+    }
+
+    #history {
+      text-align: left;
+      margin-top: 2rem;
+      padding: 1rem;
+      border-top: 1px solid #ddd;
+      display: none;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .history-item {
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+      padding: 0.25rem 0.5rem;
+      background: #eee;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
   <div class="card">
+    <span id="historyToggle" title="Show/Hide Message History">🕓</span>
+
     <h1>💌 A Message for You</h1>
     <div class="message" id="mainMessage">
       You are amazing. Keep going. 🌟
@@ -87,18 +119,46 @@
     <textarea id="replyInput" placeholder="Write your message here..."></textarea>
     <button onclick="sendReply()">Send Message</button>
     <div class="success" id="successMessage"></div>
+
+    <div id="history"></div>
   </div>
 
   <script>
+    const historyBox = document.getElementById("history");
+    const historyToggle = document.getElementById("historyToggle");
+    const replies = [];
+
+    historyToggle.addEventListener("click", () => {
+      if (historyBox.style.display === "none") {
+        updateHistory();
+        historyBox.style.display = "block";
+      } else {
+        historyBox.style.display = "none";
+      }
+    });
+
     function sendReply() {
       const input = document.getElementById("replyInput");
       const text = input.value.trim();
       if (text === "") return;
 
-      // Simulate sending (for testing)
+      replies.push(text);
       console.log("Message sent:", text);
+
       input.value = "";
       document.getElementById("successMessage").textContent = "✅ Message sent! (Test only)";
+
+      updateHistory();
+    }
+
+    function updateHistory() {
+      historyBox.innerHTML = "<strong>Previous Replies:</strong><br>";
+      replies.slice().reverse().forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.textContent = msg;
+        historyBox.appendChild(div);
+      });
     }
   </script>
 </body>
