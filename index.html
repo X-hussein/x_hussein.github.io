@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Page 1 - Send Message</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <title>Page 1 - Send to B</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body style="font-family:sans-serif; max-width:600px; margin:auto; padding:2rem;">
-  <h2>📤 Send Message to Page 2</h2>
-  <textarea id="sendBox" placeholder="Type your message..." style="width:100%; height:100px;"></textarea>
-  <button onclick="sendMessage()" style="margin-top:10px;">Send</button>
-  <p id="status"></p>
+<body style="font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto;">
 
-  <hr>
+  <h2>✉️ Send Message to Page 2</h2>
+  <textarea id="sendBox" placeholder="Write your message..." style="width: 100%; height: 100px;"></textarea>
+  <button onclick="sendMessage()" style="margin-top: 10px;">Send</button>
+  <p id="status" style="color: green;"></p>
+
+  <hr />
+
   <h2>📥 Message from Page 2</h2>
   <div id="receivedMessage">Loading...</div>
 
-  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
@@ -34,17 +36,19 @@
     const db = getFirestore(app);
     const docRef = doc(db, "chat", "sharedMessage");
 
+    // Send message to Page 2
     async function sendMessage() {
-      const text = document.getElementById("sendBox").value.trim();
-      if (!text) return;
-      await updateDoc(docRef, { messageFromA: text });
-      document.getElementById("status").innerText = "✅ Sent!";
+      const msg = document.getElementById("sendBox").value.trim();
+      if (!msg) return;
+      await updateDoc(docRef, { messageFromA: msg });
+      document.getElementById("status").innerText = "✅ Message sent!";
     }
 
-    // Live update from Page 2
+    // Listen for reply from Page 2
     onSnapshot(docRef, (docSnap) => {
       const data = docSnap.data();
-      document.getElementById("receivedMessage").innerText = data.messageFromB || "(No reply yet)";
+      document.getElementById("receivedMessage").innerText =
+        data.messageFromB || "(No reply yet)";
     });
   </script>
 </body>
