@@ -4,74 +4,107 @@
   <meta charset="UTF-8" />
   <title>Page 1 - Send to B</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f6f8fa;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+      min-height: 100vh;
       margin: 0;
       padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .container {
-      background: #fff;
-      margin: 3rem auto;
-      max-width: 420px;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      padding: 2rem 2rem 1.5rem 2rem;
+      background: rgba(255,255,255,0.97);
+      margin: 2rem auto;
+      max-width: 440px;
+      border-radius: 22px;
+      box-shadow: 0 8px 40px rgba(44,83,100,0.18), 0 1.5px 6px rgba(44,83,100,0.10);
+      padding: 2.5rem 2rem 2rem 2rem;
+      position: relative;
+      overflow: hidden;
     }
     h2 {
       margin-top: 0;
       font-weight: 600;
-      color: #2d3748;
+      color: #1a365d;
+      letter-spacing: -0.5px;
     }
     textarea {
       width: 100%;
       min-height: 90px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      padding: 0.75rem;
-      font-size: 1rem;
+      border-radius: 10px;
+      border: 1.5px solid #b6c6d6;
+      padding: 0.85rem;
+      font-size: 1.08rem;
       margin-bottom: 0.5rem;
       resize: vertical;
-      transition: border 0.2s;
+      transition: border 0.2s, box-shadow 0.2s;
+      background: #f7fafc;
+      box-shadow: 0 1px 2px rgba(44,83,100,0.04);
     }
     textarea:focus {
       border: 1.5px solid #3182ce;
       outline: none;
+      box-shadow: 0 0 0 2px #90cdf4;
     }
     button {
-      background: #3182ce;
+      background: linear-gradient(90deg, #3182ce 0%, #6b9dfc 100%);
       color: #fff;
       border: none;
-      border-radius: 8px;
-      padding: 0.6rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 500;
+      border-radius: 10px;
+      padding: 0.7rem 2.2rem;
+      font-size: 1.08rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(49,130,206,0.10);
+      transition: background 0.2s, transform 0.12s;
       margin-bottom: 0.5rem;
+      position: relative;
+      overflow: hidden;
     }
     button:active {
-      background: #225ea8;
+      background: linear-gradient(90deg, #225ea8 0%, #4e7ad7 100%);
+      transform: scale(0.97);
     }
     #status {
       min-height: 1.2em;
       margin-bottom: 0.5rem;
       transition: color 0.2s;
+      font-weight: 500;
+      font-size: 1.01em;
     }
     .message-box {
-      background: #f1f5f9;
-      border-radius: 8px;
-      padding: 1rem;
+      background: linear-gradient(90deg, #e3ecfa 0%, #f7fafc 100%);
+      border-radius: 10px;
+      padding: 1.1rem;
       min-height: 2.5em;
-      color: #374151;
+      color: #1a365d;
       margin-bottom: 0.5rem;
       word-break: break-word;
+      box-shadow: 0 1px 4px rgba(44,83,100,0.06);
+      font-size: 1.08rem;
     }
     hr {
       border: none;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1.5px solid #e2e8f0;
       margin: 2rem 0 1.5rem 0;
+    }
+    .confetti {
+      position: absolute;
+      left: 50%;
+      top: 20%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 10;
+      animation: pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    @keyframes pop {
+      0% { opacity: 0; transform: scale(0.5) translate(-50%, -50%); }
+      60% { opacity: 1; transform: scale(1.2) translate(-50%, -50%); }
+      100% { opacity: 0; transform: scale(1.6) translate(-50%, -50%); }
     }
   </style>
 </head>
@@ -85,6 +118,7 @@
     <hr />
     <h2>📥 Message from Page 2</h2>
     <div id="receivedMessage" class="message-box">Loading...</div>
+    <div id="confettiContainer"></div>
   </div>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -108,6 +142,7 @@
     const sendBtn = document.getElementById("sendBtn");
     const status = document.getElementById("status");
     const sendBox = document.getElementById("sendBox");
+    const confettiContainer = document.getElementById("confettiContainer");
 
     sendBtn.addEventListener("click", sendMessage);
     sendBox.addEventListener("keydown", e => {
@@ -115,6 +150,21 @@
         sendMessage();
       }
     });
+
+    function showConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.innerHTML = `
+        <svg width="60" height="60" viewBox="0 0 60 60">
+          <g>
+            <circle cx="30" cy="30" r="12" fill="#38a169"/>
+            <polyline points="24,30 29,35 36,25" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      `;
+      confettiContainer.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 700);
+    }
 
     async function sendMessage() {
       const msg = sendBox.value.trim();
@@ -124,6 +174,7 @@
         return;
       }
       sendBtn.disabled = true;
+      sendBtn.style.transform = 'scale(0.97)';
       status.style.color = "#3182ce";
       status.innerText = "Sending...";
       try {
@@ -131,12 +182,14 @@
         status.style.color = "#38a169";
         status.innerText = "✅ Message sent!";
         sendBox.value = "";
+        showConfetti();
       } catch (error) {
         console.error("Error:", error);
         status.style.color = "#e53e3e";
         status.innerText = "❌ Failed to send.";
       } finally {
         sendBtn.disabled = false;
+        sendBtn.style.transform = '';
         setTimeout(() => { status.innerText = ""; }, 2500);
       }
     }
