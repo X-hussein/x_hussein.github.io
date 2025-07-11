@@ -1,100 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💌 A Message for You</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-      color: #333;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      max-width: 600px;
-      width: 90%;
-      text-align: center;
-      position: relative;
-    }
-
-    h1 {
-      font-size: 2rem;
-      color: #444;
-      margin-bottom: 1rem;
-    }
-
-    .message {
-      font-size: 1.25rem;
-      margin: 1.5rem 0;
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 1rem;
-      font-size: 1rem;
-      resize: none;
-    }
-
-    button {
-      margin-top: 1rem;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: #45a049;
-    }
-
-    .success {
-      margin-top: 1rem;
-      color: green;
-    }
-  </style>
+  <title>Page 1 - Send Message</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
-<body>
-  <div class="card">
-    <h1>💌 A Message for You</h1>
-    <div class="message" id="mainMessage">Loading...</div>
+<body style="font-family:sans-serif; max-width:600px; margin:auto; padding:2rem;">
+  <h2>📤 Send Message to Page 2</h2>
+  <textarea id="sendBox" placeholder="Type your message..." style="width:100%; height:100px;"></textarea>
+  <button onclick="sendMessage()" style="margin-top:10px;">Send</button>
+  <p id="status"></p>
 
-    <h2>📬 Send a Reply</h2>
-    <textarea id="replyInput" placeholder="Write your message here..."></textarea>
-    <button onclick="sendReply()">Send Message</button>
-    <div class="success" id="successMessage"></div>
-  </div>
+  <hr>
+  <h2>📥 Message from Page 2</h2>
+  <div id="receivedMessage">Loading...</div>
 
-  <!-- Firebase SDKs (Modular v9+) -->
+  <!-- Firebase SDKs -->
   <script type="module">
-    // Import Firebase modules from CDN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-    // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyAh_wT6Gen8-gLNnDOmwIixOthwSs7PdhM",
       authDomain: "nfc-message-app.firebaseapp.com",
@@ -106,41 +30,22 @@
       measurementId: "G-87YV2RWQVR"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const docRef = doc(db, "chat", "sharedMessage");
 
-    // Fetch main message from Firestore
-    const messageEl = document.getElementById("mainMessage");
-    async function loadMessage() {
-      const docRef = doc(db, "siteData", "mainMessage");
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        messageEl.textContent = docSnap.data().text || "No message found.";
-      } else {
-        messageEl.textContent = "Message not found.";
-      }
+    async function sendMessage() {
+      const text = document.getElementById("sendBox").value.trim();
+      if (!text) return;
+      await updateDoc(docRef, { messageFromA: text });
+      document.getElementById("status").innerText = "✅ Sent!";
     }
-    loadMessage();
 
-    // Send reply
-    window.sendReply = async function () {
-      const input = document.getElementById("replyInput");
-      const reply = input.value.trim();
-      if (reply === "") return;
-
-      try {
-        await addDoc(collection(db, "replies"), {
-          message: reply,
-          timestamp: serverTimestamp()
-        });
-        input.value = "";
-        document.getElementById("successMessage").textContent = "✅ Message sent!";
-      } catch (e) {
-        console.error("Error sending reply: ", e);
-        document.getElementById("successMessage").textContent = "❌ Failed to send message.";
-      }
-    };
+    // Live update from Page 2
+    onSnapshot(docRef, (docSnap) => {
+      const data = docSnap.data();
+      document.getElementById("receivedMessage").innerText = data.messageFromB || "(No reply yet)";
+    });
   </script>
 </body>
 </html>
